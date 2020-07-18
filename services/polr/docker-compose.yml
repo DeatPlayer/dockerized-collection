@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+
+    polr-app:
+        image: ajanvier/polr
+        container_name: ${POLR_APP_NAME:-polr-app}
+        networks:
+          - default
+        depends_on:
+          - polr-db
+        environment:
+          DB_HOST: ${MYSQL_HOST}
+          DB_DATABASE: ${MYSQL_DATABASE}
+          DB_USERNAME: ${MYSQL_USER}
+          DB_PASSWORD: ${MYSQL_PASSWORD}
+          ADMIN_USERNAME: ${POLR_ADMIN_USER}
+          ADMIN_PASSWORD: ${POLR_ADMIN_PASSWORD}
+          ADMIN_EMAIL: ${POLR_ADMIN_EMAIL}
+          APP_NAME: ${POLR_APP_DISPLAY_NAME}
+          APP_ADDRESS: ${POLR_DOMAIN}
+          SETTING_SHORTEN_PERMISSION: true
+          SETTING_PSEUDORANDOM_ENDING: true
+          SETTING_ADV_ANALYTICS: true
+          SETTING_RESTRICT_EMAIL_DOMAIN: true
+          SETTING_ALLOWED_EMAIL_DOMAINS: ${POLR_ALLOWED_EMAIL_DOMAINS}
+          POLR_ALLOW_ACCT_CREATION: true
+          VIRTUAL_HOST: ${VIRTUAL_HOST}
+          LETSENCRYPT_HOST: ${LETSENCRYPT_HOST}
+          LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+
+    polr-db:
+        image: mariadb:${DB_IMAGE_TAG}
+        container_name: ${POLR_DB_NAME:-polr-db}
+        restart: unless-stopped
+        volumes:
+            - ${LOCAL_DB_DIR}:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+networks:
+    default:
+        external:
+            name: ${NETWORK}

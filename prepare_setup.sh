@@ -12,8 +12,9 @@ else
     exit 1
 fi
 
-echo "Creating docker network.."
+echo "Creating docker networks.."
 docker network create $NETWORK $NETWORK_OPTIONS
+docker network create $NETWORK_INTERNAL $NETWORK_INTERNAL_OPTIONS
 
 echo "Downloading the latest nginx.tmpl file.."
 curl https://raw.githubusercontent.com/jwilder/nginx-proxy/master/nginx.tmpl > nginx.tmpl

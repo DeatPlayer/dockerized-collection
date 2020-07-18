@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+    hastebin-redis:
+        image: redis
+        container_name: ${HASTEBIN_REDIS_NAME:-hastebin-redis}
+        restart: always
+        volumes:
+            - ${HASTEBIN_REDIS_PATH:-./data/redis}:/data
+        networks:
+            - default
+        entrypoint: redis-server --appendonly yes
+
+    hastebin-app:
+        image: rlister/hastebin
+        container_name: ${HASTEBIN_APP_NAME:-hastebin-app}
+        restart: always
+        depends_on: 
+            - hastebin-redis
+        volumes: 
+            - ${HASTEBIN_STORAGE_PATH:-./data/storage}:/app/data:rw
+        environment:
+            STORAGE_TYPE: redis
+            STORAGE_HOST: hastebin-redis
+            VIRTUAL_HOST: ${VIRTUAL_HOST}
+            LETSENCRYPT_HOST: ${LETSENCRYPT_HOST}
+            LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+
+networks:
+    default:
+        external:
+            name: ${NETWORK}
