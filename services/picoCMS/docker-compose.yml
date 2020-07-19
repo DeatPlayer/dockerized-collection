@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+    
+    picocms-app:
+        container_name: ${APP_CONTAINER_NAME:-picocms-app}
+        image: gprevost/picocms
+        restart: always
+        volumes:
+            - ${LOCAL_CONFIG_DIR}:/home/sites/picocms/config
+            - ${LOCAL_CONTENT_DIR}:/home/sites/picocms/content
+            - ${LOCAL_PLUGINS_DIR}:/home/sites/picocms/plugins
+            - ${LOCAL_THEMES_DIR}:/home/sites/picocms/themes
+        environment:
+            VIRTUAL_HOST: ${VIRTUAL_HOST}
+            LETSENCRYPT_HOST: ${LETSENCRYPT_HOST}
+            LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+
+networks:
+    default:
+        external:
+            name: ${NETWORK}
