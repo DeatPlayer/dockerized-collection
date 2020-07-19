@@ -37,7 +37,7 @@ if [ ! -z ${USE_NGINX_CONF_FILES+X} ] && [ "$USE_NGINX_CONF_FILES" = true ]; the
         echo "The standard configuration is used."
         echo "###################################################"
     fi
-
+fi
 
 echo "Starting proxy.."
 docker-compose up -d
