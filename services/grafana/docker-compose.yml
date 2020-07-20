@@ -81,7 +81,7 @@ services:
         environment:
             GF_SECURITY_ADMIN_USER: ${ADMIN_USER:-admin}
             GF_SECURITY_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
-            GF_USERS_ALLOW_SIGN_UP: false
+            GF_USERS_ALLOW_SIGN_UP: "false"
             VIRTUAL_HOST: ${VIRTUAL_HOST_GRAFANA}
             VIRTUAL_PORT: ${VIRTUAL_PORT_GRAFANA}
             LETSENCRYPT_HOST: ${LETSENCRYPT_HOST_GRAFANA}
@@ -100,12 +100,6 @@ services:
             - default
         labels:
             org.label-schema.group: "monitoring"
-
-
-
-
-
-
 
 networks:
     default:

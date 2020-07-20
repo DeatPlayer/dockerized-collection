@@ -1,18 +1,20 @@
 version: '3'
 
-service:
+services:
     gitlab-app:
         image: gitlab/gitlab-ce:latest
         container_name: ${CONTAINER_NAME}
-        restart: always
-        hostname: ${MAIN_DOMAIN}
-        volumes:
-            - ${GITLAB_DATA_PATH}config:/etc/gitlab
-            - ${GITLAB_DATA_PATH}logs:/var/log/gitlab
-            - ${GITLAB_DATA_PATH}data:/var/opt/gitlab
         restart: unless-stopped
-        env_file: 
-            - ./.env
+        hostname: ${VIRTUAL_HOST}
+        volumes:
+            - ${GITLAB_DATA_PATH}:/var/opt/gitlab
+            - ${GITLAB_CONFIG_PATH}:/etc/gitlab
+            - ${GITLAB_LOGS_PATH}:/var/log/gitlab
+        environment:
+            VIRTUAL_HOST: ${VIRTUAL_HOST}
+            LETSENCRYPT_HOST: ${LETSENCRYPT_HOST}
+            LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+            GITLAB_OMNIBUS_CONFIG: ${GITLAB_OMNIBUS_CONFIG}
         networks:
             - default
 
