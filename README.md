@@ -1,5 +1,7 @@
 # dockerized-collection
 
+## Currently still completely untested!
+
 Various services behind an NGINX proxy..
 
 This repository combines several individual projects into one (hopefully) easy to manage project.

@@ -19,6 +19,8 @@ services:
         container_name: ${APP_CONTAINER_NAME}
         image: nextcloud:${APP_IMAGE_TAG}
         restart: unless-stopped
+        networks:
+            - default
         volumes:
             - ${LOCAL_DATA_DIR}:/var/www/html
             - ${LOCAL_CONF_DIR}:/var/www/html/config
@@ -29,6 +31,7 @@ services:
             NEXTCLOUD_DATA_DIR: ${NEXTCLOUD_DATA_DIR}
             NEXTCLOUD_TABLE_PREFIX: ${NEXTCLOUD_TABLE_PREFIX}
             NEXTCLOUD_TRUSTED_DOMAINS: ${LETSENCRYPT_HOST}
+            APACHE_DISABLE_REWRITE_IP: 1
             VIRTUAL_HOST: ${VIRTUAL_HOST}
             LETSENCRYPT_HOST: ${LETSENCRYPT_HOST}
             LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}

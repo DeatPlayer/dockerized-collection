@@ -1,0 +1,113 @@
+version: '3'
+
+services:
+    prometheus:
+        container_name: ${CONTAINER_NAME_PROMETHEUS}
+        image: prom/prometheus:${PROMETHEUS_IMAGE_TAG}
+        restart: unless-stopped
+        volumes:
+            - ${LOCAL_PROMETHEUS_CONF_DIR}:/etc/prometheus
+            - ${LOCAL_PROMETHEUS_DATA_DIR}:/prometheus
+        command:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus'
+            - '--web.console.libraries=/etc/prometheus/console_libraries'
+            - '--web.console.templates=/etc/prometheus/consoles'
+            - '--storage.tsdb.retention.time=200h'
+            - '--web.enable-lifecycle'
+        networks:
+            - default
+        labels:
+            org.label-schema.group: "monitoring"   
+        environment:
+            VIRTUAL_HOST: ${VIRTUAL_HOST_PROMETHEUS}
+            VIRTUAL_PORT: ${VIRTUAL_PORT_PROMETHEUS}
+            LETSENCRYPT_HOST: ${LETSENCRYPT_HOST_PROMETHEUS}
+            LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+
+    alertmanager:
+        image: prom/alertmanager:${ALERTMANAGER_IMAGE_TAG}
+        container_name: ${CONTAINER_NAME_ALERTMANAGER}
+        volumes:
+            - ${LOCAL_ALERTMANAGER_CONF_DIR}:/etc/alertmanager
+        command:
+            - '--config.file=/etc/alertmanager/config.yml'
+            - '--storage.path=/alertmanager'
+        restart: unless-stopped
+        networks:
+            - default
+        labels:
+            org.label-schema.group: "monitoring"
+
+    nodeexporter:
+        image: prom/node-exporter:${NODEEXPORTER_IMAGE_TAG}
+        container_name: ${CONTAINER_NAME_NODEEXPORTER}
+        volumes:
+            - /proc:/host/proc:ro
+            - /sys:/host/sys:ro
+            - /:/rootfs:ro
+        command:
+            - '--path.procfs=/host/proc'
+            - '--path.rootfs=/rootfs'
+            - '--path.sysfs=/host/sys'
+            - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+        restart: unless-stopped
+        networks:
+            - default
+        labels:
+            org.label-schema.group: "monitoring"
+
+    cadvisor:
+        image: gcr.io/cadvisor/cadvisor:${CADVISER_IMAGE_TAG}
+        container_name: ${CONTAINER_NAME_CADVISER}
+        volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:rw
+            - /sys:/sys:ro
+            - /var/lib/docker:/var/lib/docker:ro
+            - /cgroup:/cgroup:ro #doesn't work on MacOS only for Linux
+        restart: unless-stopped
+        networks:
+            - default
+        labels:
+            org.label-schema.group: "monitoring"
+
+    grafana:
+        image: grafana/grafana:${GRAFANA_IMAGE_TAG}
+        container_name: ${CONTAINER_NAME_GRAFANA}
+        volumes:
+            - ${LOCAL_GRAFANA_DATA_DIR}:/var/lib/grafana
+            - ${LOCAL_GRAFANA_PROVISIONING_DIR}:/etc/grafana/provisioning
+        environment:
+            GF_SECURITY_ADMIN_USER: ${ADMIN_USER:-admin}
+            GF_SECURITY_ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+            GF_USERS_ALLOW_SIGN_UP: false
+            VIRTUAL_HOST: ${VIRTUAL_HOST_GRAFANA}
+            VIRTUAL_PORT: ${VIRTUAL_PORT_GRAFANA}
+            LETSENCRYPT_HOST: ${LETSENCRYPT_HOST_GRAFANA}
+            LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+        restart: unless-stopped
+        networks:
+            - default
+        labels:
+            org.label-schema.group: "monitoring"
+
+    pushgateway:
+        image: prom/pushgateway:v1.2.0
+        container_name: pushgateway
+        restart: unless-stopped
+        networks:
+            - default
+        labels:
+            org.label-schema.group: "monitoring"
+
+
+
+
+
+
+
+networks:
+    default:
+        external:
+            name: ${NETWORK}

@@ -6,6 +6,8 @@ services:
         container_name: ${APP_CONTAINER_NAME:-picocms-app}
         image: gprevost/picocms
         restart: always
+        networks:
+            - default
         volumes:
             - ${LOCAL_CONFIG_DIR}:/home/sites/picocms/config
             - ${LOCAL_CONTENT_DIR}:/home/sites/picocms/content
